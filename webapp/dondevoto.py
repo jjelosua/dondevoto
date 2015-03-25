@@ -23,8 +23,8 @@ from werkzeug.formparser import parse_form_data
 from werkzeug.wsgi import get_input_stream
 from io import BytesIO
 
-OGR2OGR_PATH = os.environ.get('OGR2OGR_PATH', '/Applications/Postgres.app/Contents/MacOS/bin/ogr2ogr')
-GDAL_DATA = os.environ.get('GDAL_DATA', '/Applications/Postgres.app/Contents/MacOS/share/gdal/')
+OGR2OGR_PATH = os.environ.get('OGR2OGR_PATH', '/usr/local/bin/ogr2ogr')
+GDAL_DATA = os.environ.get('GDAL_DATA', '/usr/local/Cellar/gdal/1.11.1_3/share/gdal/')
 
 def zipdir(path, zip):
     for root, dirs, files in os.walk(path):
@@ -54,9 +54,11 @@ def authfunc(env, username, password):
     return password == os.environ.get('DONDEVOTO_PASSWORD', 'dondevoto')
 
 app = Flask(__name__)
+# Add debug mode
+app.debug = True
 app.wsgi_app = basic.basic('dondevoto', authfunc)(MethodMiddleware(app.wsgi_app))
 
-db = dataset.connect('postgresql://manuel@localhost:5432/mapa_paso')
+db = dataset.connect('postgresql://jjelosua@localhost:5432/elecciones2013')
 
 def provincias_distritos():
     """ mapa distrito -> [seccion, ..., seccion] """
@@ -222,8 +224,7 @@ def match_create(establecimiento_id, place_id):
     # asegurarse que el establecimiento y el lugar existan
     # y que el lugar este contenido dentro de la region geografica
     # del establecimiento
-    q = """ SELECT e.*,
-                   esc.*
+    q = """ SELECT e.*
             FROM establecimientos e
             INNER JOIN divisiones_administrativas da ON e.dne_distrito_id = da.dne_distrito_id
             AND e.dne_seccion_id = da.dne_seccion_id
@@ -238,6 +239,7 @@ def match_create(establecimiento_id, place_id):
     # borrar todos los matches humanos anteriores
     q = DELETE_MATCHES_QUERY % (establecimiento_id, place_id)
     db.query(q)
+
 
     db['weighted_matches'].insert({
         'establecimiento_id': establecimiento_id,
@@ -308,7 +310,7 @@ def get_shapefile(dne_distrito_id, dne_seccion_id=None):
 
     os.environ['GDAL_DATA'] = GDAL_DATA
     # ojo con el injection aca. Si lo usas en algun lado, fijate que onda.
-    call("%s -f \"ESRI Shapefile\" -a_srs EPSG:4326 %s.shp PG:\"host=localhost user=manuel dbname=mapa_paso\" -sql \"%s\"" \
+    call("%s -f \"ESRI Shapefile\" -a_srs EPSG:4326 %s.shp PG:\"host=localhost user=jjelosua dbname=elecciones2013\" -sql \"%s\"" \
          % (OGR2OGR_PATH,
             os.path.join(tmp_dir, "%s-%s.shp" % (dne_distrito_id, dne_seccion_id)),
             q),

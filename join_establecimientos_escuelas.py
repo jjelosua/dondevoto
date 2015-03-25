@@ -70,7 +70,7 @@ establecimientos_escuelas = {u'BUENOS AIRES': u'Buenos Aires',
  u'TIERRA DEL FUEGO': u'Tierra del Fuego',
  u'TUCUM\xc1N': u'TUCUMAN'}
 
-db = dataset.connect('postgresql://manuel@localhost:5432/mapa_paso')
+db = dataset.connect('postgresql://jjelosua@localhost:5432/elecciones2013')
 dine_estab = db['establecimientos']
 escuelas = db['escuelasutf8']
 weighted_matches = db['weighted_matches']
