@@ -132,6 +132,7 @@ def do_match():
         match_in = { canon_func(i): i
                      for i in escuelas_in_distrito(e['dne_seccion_id'],
                                                    e['dne_distrito_id']) }
+        print match_in
 
         _matches = get_close_matches_with_score(canon_func({'nombre': e[u'establecimiento'],
                                                             'ndomiciio': e[u'direccion']}),
@@ -141,9 +142,9 @@ def do_match():
 
         matches += [(score * coeff, match_in[result]) for score, result in _matches]
 
-        # log('Matching "%s - %s (%s)"' % (e['establecimiento'], e['direccion'], e['localidad']))
-        # for m in matches:
-        #     log('\t%.2f %s - %s (%s)' % (m[0], m[1]['nombre'], m[1]['ndomiciio'], m[1]['localidad']))
+        #log('Matching "%s - %s (%s)"' % (e['establecimiento'], e['direccion'], e['localidad']))
+        #for m in matches:
+        #    log('\t%.2f %s - %s (%s)' % (m[0], m[1]['nombre'], m[1]['ndomiciio'], m[1]['localidad']))
 
         persist_queue.put((e, matches))
 
