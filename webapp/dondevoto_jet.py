@@ -76,14 +76,14 @@ def provincias_distritos():
                ON e.dne_distrito_id = da.dne_distrito_id
                AND e.dne_seccion_id = da.dne_seccion_id
             LEFT OUTER JOIN weighted_matches wm
-               ON wm.establecimiento_id = e.id AND wm.score >= %f
+               ON wm.establecimiento_id = e.id AND wm.score = 1
             GROUP BY da.dne_distrito_id,
                      da.provincia,
                      da.dne_seccion_id,
                      da.departamento
             ORDER BY provincia,
                      departamento
-        """ % (MATCH_THRESHOLD)
+        """
     for d in db.query(q):
         k = (d['dne_distrito_id'], d['provincia'],)
         if k not in rv:
@@ -121,9 +121,9 @@ def completion():
                ON e.dne_distrito_id = da.dne_distrito_id
                AND e.dne_seccion_id = da.dne_seccion_id
             LEFT OUTER JOIN weighted_matches wm
-               ON wm.establecimiento_id = e.id AND wm.score >= %f
+               ON wm.establecimiento_id = e.id AND wm.score = 1
             GROUP BY da.provincia
-            ORDER BY provincia """ % (MATCH_THRESHOLD)
+            ORDER BY provincia """
 
     return flask.Response(flask.json.dumps(list(db.query(q))),
                           mimetype='application/json')
@@ -170,7 +170,7 @@ def matched_escuelas(establecimiento_id):
        esc.*,
        st_asgeojson(wkb_geometry_4326) AS geojson,
        (CASE WHEN wm.match_source >= 1 THEN 1
-             WHEN wm.score >= %f AND wm.match_source = 0 THEN 1
+             WHEN wm.score > %f AND wm.match_source = 0 THEN 1
              ELSE 0
         END) AS is_match
        FROM weighted_matches wm
@@ -191,14 +191,12 @@ def places_for_distrito_and_seccion(distrito_id, seccion_id):
     """ Todos los places (escuelas) para este distrito y seccion """
     q = """ SELECT esc.*,
                    st_asgeojson(wkb_geometry_4326) AS geojson,
-                   similarity(ndomiciio, '%s') as sim
+                   similarity(ndomiciio || nombre, '%s') as sim
             FROM escuelasutf8 esc
-            INNER JOIN divisiones_administrativas da
-            ON st_within(esc.wkb_geometry_4326, ST_Translate(ST_Scale(da.wkb_geometry, 1.1, 1.1), ST_X(ST_Centroid(da.wkb_geometry))*(1 - 1.1), ST_Y(ST_Centroid(da.wkb_geometry))*(1 - 1.1) ))
-            WHERE da.dne_distrito_id = %d
-              AND da.dne_seccion_id = %d
+            WHERE esc.dne_distrito_id = %d
+              AND esc.dne_seccion_id = %d
             ORDER BY sim DESC
-            LIMIT 15 """ % (request.args.get('direccion').replace("'", "''"),
+            LIMIT 20 """ % (request.args.get('nombre').replace("'", "''") + request.args.get('direccion').replace("'", "''"),
                             distrito_id,
                             seccion_id)
 
@@ -225,9 +223,12 @@ def match_create(establecimiento_id, place_id):
     # del establecimiento
     q = """ SELECT e.*
             FROM establecimientos e
-            INNER JOIN divisiones_administrativas da ON e.dne_distrito_id = da.dne_distrito_id
+            INNER JOIN divisiones_administrativas da 
+            ON e.dne_distrito_id = da.dne_distrito_id
             AND e.dne_seccion_id = da.dne_seccion_id
-            INNER JOIN escuelasutf8 esc ON st_within(esc.wkb_geometry_4326, ST_Translate(ST_Scale(da.wkb_geometry, 1.1, 1.1), ST_X(ST_Centroid(da.wkb_geometry))*(1 - 1.1), ST_Y(ST_Centroid(da.wkb_geometry))*(1 - 1.1) ))
+            INNER JOIN escuelasutf8 esc 
+            ON esc.dne_distrito_id = da.dne_distrito_id
+            AND esc.dne_seccion_id = da.dne_seccion_id
             WHERE e.id = %d
               AND esc.ogc_fid = %d """ % (establecimiento_id, place_id)
 
@@ -254,14 +255,16 @@ def create_place():
     """ crea un nuevo lugar (una 'escuela') """
 
     q = """
-    INSERT INTO escuelasutf8 (nombre, ndomiciio, localidad, wkb_geometry_4326)
-    VALUES ('%s', '%s', '%s', '%s')
+    INSERT INTO escuelasutf8 (nombre, ndomiciio, localidad, wkb_geometry_4326, dne_distrito_id, dne_seccion_id)
+    VALUES ('%s', '%s', '%s', '%s', %s, %s)
     RETURNING ogc_fid
     """ % (
         request.form['nombre'].replace("'", "''"),
         request.form['ndomiciio'].replace("'", "''"),
         request.form['localidad'].replace("'", "''"),
-        request.form['wkb_geometry_4326']
+        request.form['wkb_geometry_4326'],
+        request.form['distrito'],
+        request.form['seccion']
     )
     r = db.query(q)
     return flask.Response(flask.json.dumps(r.next()),
@@ -309,7 +312,7 @@ def get_shapefile(dne_distrito_id, dne_seccion_id=None):
 
     os.environ['GDAL_DATA'] = GDAL_DATA
     # ojo con el injection aca. Si lo usas en algun lado, fijate que onda.
-    call("%s -f \"ESRI Shapefile\" -a_srs EPSG:4326 %s.shp PG:\"host=localhost user=jjelosua dbname=elecciones2013\" -sql \"%s\"" \
+    call("%s -f \"ESRI Shapefile\" -a_srs EPSG:4326 %s.shp PG:\"host=localhost user=jjelosua dbname=elecciones2015\" -sql \"%s\"" \
          % (OGR2OGR_PATH,
             os.path.join(tmp_dir, "%s-%s.shp" % (dne_distrito_id, dne_seccion_id)),
             q),

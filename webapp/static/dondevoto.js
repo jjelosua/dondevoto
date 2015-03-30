@@ -29,6 +29,7 @@ $(function(){
                 name: 'agregar_lugar',
                 action: function(e) {
                     var tr = $('tr.establecimiento.active');
+                    var p_d = $('select#distrito option:selected').val().split('-');
                     var c = $('td', tr).map(function(d,e) { return e.innerHTML; });
                     console.log(c);
                     $('tr.establecimiento.active + tr.matches td table').prepend(new_estab_tmpl({contents: c}));
@@ -36,7 +37,9 @@ $(function(){
                         nombre: c[0],
                         ndomiciio: c[1],
                         localidad: c[2],
-                        wkb_geometry_4326: 'SRID=4326;POINT(' + lastRightClickedPoint.lng() + ' ' + lastRightClickedPoint.lat() + ')'
+                        wkb_geometry_4326: 'SRID=4326;POINT(' + lastRightClickedPoint.lng() + ' ' + lastRightClickedPoint.lat() + ')',
+                        distrito: p_d[0],
+                        seccion: p_d[1]
                     };
                     $.post('/create',
                            place_data,
@@ -210,7 +213,9 @@ $(function(){
             var tr = a.parents('tr.matches');
             var prev = tr.prev();
             $.get('/places/' + currentDistrito + '/' + currentSeccion,
-                  { direccion: $('td:nth-child(2)', prev).html() },
+                  { direccion: $('td:nth-child(2)', prev).html(), 
+                    // Add nombre to the mixture for the similarity
+                    nombre: $('td:nth-child(1)', prev).html()},
                   function(data) {
                       tr.remove();
                       prev.after(matches_tmpl({
