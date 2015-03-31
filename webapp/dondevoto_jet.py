@@ -241,16 +241,12 @@ def match_delete(establecimiento_id, place_id):
 @app.route('/matches/<int:establecimiento_id>/<int:place_id>', methods=['POST'])
 def match_create(establecimiento_id, place_id):
     # asegurarse que el establecimiento y el lugar existan
-    # y que el lugar este contenido dentro de la region geografica
+    # y que el lugar este contenido dentro del distrito
     # del establecimiento
     q = """ SELECT e.*
             FROM establecimientos e
-            INNER JOIN divisiones_administrativas da 
-            ON e.dne_distrito_id = da.dne_distrito_id
-            AND e.dne_seccion_id = da.dne_seccion_id
             INNER JOIN escuelasutf8 esc 
-            ON esc.dne_distrito_id = da.dne_distrito_id
-            AND esc.dne_seccion_id = da.dne_seccion_id
+            ON esc.dne_distrito_id = e.dne_distrito_id
             WHERE e.id = %d
               AND esc.ogc_fid = %d """ % (establecimiento_id, place_id)
 
