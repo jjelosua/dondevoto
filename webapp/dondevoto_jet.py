@@ -17,7 +17,6 @@ MATCH_THRESHOLD = 0.95
 DELETE_MATCHES_QUERY = """ DELETE
                            FROM weighted_matches
                            WHERE establecimiento_id = %d
-                             AND escuela_id = %d
                              AND match_source = 1 """
 
 from werkzeug.formparser import parse_form_data
@@ -233,8 +232,8 @@ def places_for_distrito_and_seccion(distrito_id, seccion_id):
            methods=['DELETE'])
 def match_delete(establecimiento_id, place_id):
     """ modificar los weighted_matches para un (establecimiento, escuela) """
-    # borrar todos los matches humanos anteriores
-    q = DELETE_MATCHES_QUERY % (establecimiento_id, place_id)
+    # borrar todos los matches humanos anteriores para un establecimiento
+    q = DELETE_MATCHES_QUERY % (establecimiento_id)
     db.query(q)
     return flask.Response('')
 
@@ -259,8 +258,8 @@ def match_create(establecimiento_id, place_id):
         abort(400)
 
     # crear un match para un (establecimiento, escuela) implica
-    # borrar todos los matches humanos anteriores
-    q = DELETE_MATCHES_QUERY % (establecimiento_id, place_id)
+    # borrar todos los matches humanos anteriores para dicho establecimiento
+    q = DELETE_MATCHES_QUERY % (establecimiento_id)
     db.query(q)
 
 
