@@ -78,6 +78,11 @@ table#establecimientos tr.establecimiento:hover {
     background-color: lightgreen;
   }
 
+  /*jjelosua*/
+  table#establecimientos tbody tr.guessed {
+    background-color: yellow;
+  }
+
 
   table#establecimientos thead {
     text-align: left;

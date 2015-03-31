@@ -53,13 +53,6 @@ $(function(){
                            });
                 }
             },
-            // {
-            //     title: 'Escuelas en esta área',
-            //     name:  'escuelas_viewport',
-            //     action: function(e) {
-
-            //     }
-            // }
         ]
     });
 
@@ -80,7 +73,7 @@ $(function(){
     var currentPlace  = null;
     var currentSeccion = null;
     var currentDistrito = null;
-    var lastRightClickedPoint = null; // punto en el que se rightclickeo por ultima vez
+    var lastRightClickedPoint = null;
 
     var updateCompletion = function() {
         $.get('/completion', function(provincias) {
@@ -163,8 +156,8 @@ $(function(){
             currentMarker = _.find(map.markers, function(m) {
                 return m.details == d;
             });
-
-            currentMarker.infoWindow.open(map, currentMarker);
+            // Simulate a click on the actual marker
+            google.maps.event.trigger(currentMarker, 'click');
         },
         'dblclick': function() {
             maxZoomService.getMaxZoomAtLatLng(currentMarker.getPosition(), function(r) {
@@ -176,7 +169,7 @@ $(function(){
     }, 'tr.matches tr')
 
     $(document).on({
-        'change': function() { // checkbox para elegir un match
+        'change': function() { // checkbox to choose a match
             var chk = $(this);
 
             var establecimiento_tr = chk
@@ -193,6 +186,7 @@ $(function(){
             var url = '/matches/' + establecimiento + '/' + currentPlace.ogc_fid;
 
             if (chk.is(':checked')) {
+                establecimiento_tr.removeClass('guessed');
                 establecimiento_tr.addClass('matched');
                 $.post(url);
             }

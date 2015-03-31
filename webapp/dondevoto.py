@@ -58,7 +58,7 @@ app = Flask(__name__)
 app.debug = True
 app.wsgi_app = basic.basic('dondevoto', authfunc)(MethodMiddleware(app.wsgi_app))
 
-db = dataset.connect('postgresql://jjelosua@localhost:5432/elecciones2013')
+db = dataset.connect('postgresql://jjelosua@localhost:5432/elecciones2015')
 
 def provincias_distritos():
     """ mapa distrito -> [seccion, ..., seccion] """

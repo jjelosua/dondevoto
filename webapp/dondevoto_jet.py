@@ -4,6 +4,7 @@ from subprocess import call
 import zipfile, tempfile
 
 import os
+import re
 import dataset
 import flask
 from flask import Flask, render_template, jsonify, abort, request, send_file
@@ -146,7 +147,9 @@ def seccion_info(distrito_id, seccion_id):
 
 @app.route("/establecimientos/<int:distrito_id>/<int:seccion_id>")
 def establecimientos_by_distrito_and_seccion(distrito_id, seccion_id):
-    q = """ SELECT e.id, e.establecimiento, e.direccion, e.localidad, e.circuito, count(wm.*) AS match_count
+    q = """ SELECT e.id, e.establecimiento, e.direccion, e.localidad, e.circuito, 
+            count(CASE WHEN wm.score >= 1 then 1 end) AS match_count,
+            count(CASE WHEN wm.score < 1 AND wm.score >= 0.95 Then 1 end) AS guess_count
             FROM establecimientos e
             LEFT OUTER JOIN weighted_matches wm
                ON wm.establecimiento_id = e.id AND wm.score >= %f
@@ -189,16 +192,36 @@ def matched_escuelas(establecimiento_id):
 @app.route("/places/<int:distrito_id>/<int:seccion_id>")
 def places_for_distrito_and_seccion(distrito_id, seccion_id):
     """ Todos los places (escuelas) para este distrito y seccion """
+    # Add school number search on top
+    extract_integer = re.compile(r"^.*?(\d+)").match
+    match = extract_integer(request.args.get('nombre'))
+    if match: 
+      n = int(match.group(1))
+    else:
+      n = 0
+    print n
+
     q = """ SELECT esc.*,
                    st_asgeojson(wkb_geometry_4326) AS geojson,
-                   similarity(ndomiciio || nombre, '%s') as sim
+                   1 as sim
             FROM escuelasutf8 esc
-            WHERE esc.dne_distrito_id = %d
-              AND esc.dne_seccion_id = %d
+            WHERE esc.dne_distrito_id = %(distrito)d
+              AND esc.dne_seccion_id = %(seccion)d
+              AND esc.school_number = %(school_number)s
+            UNION
+            SELECT esc.*,
+                   st_asgeojson(wkb_geometry_4326) AS geojson,
+                   similarity(ndomiciio || nombre, '%(query)s') as sim
+            FROM escuelasutf8 esc
+            WHERE esc.dne_distrito_id = %(distrito)d
+              AND esc.dne_seccion_id = %(seccion)d
             ORDER BY sim DESC
-            LIMIT 20 """ % (request.args.get('nombre').replace("'", "''") + request.args.get('direccion').replace("'", "''"),
-                            distrito_id,
-                            seccion_id)
+            LIMIT 30
+            """ % {'query': request.args.get('direccion').replace("'", "''") +
+                   request.args.get('nombre').replace("'", "''"),
+                   'distrito': distrito_id,
+                   'seccion': seccion_id,
+                   'school_number': n}
 
     r = [dict(e.items() + [('geojson',simplejson.loads(e['geojson']))])
          for e in db.query(q)]
