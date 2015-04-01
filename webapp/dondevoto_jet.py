@@ -58,7 +58,7 @@ app = Flask(__name__)
 app.debug = True
 app.wsgi_app = basic.basic('dondevoto', authfunc)(MethodMiddleware(app.wsgi_app))
 
-db = dataset.connect('postgresql://jjelosua@localhost:5432/elecciones2015')
+db = dataset.connect('postgresql://jjelosua@localhost:5432/elecciones2013')
 
 def provincias_distritos():
     """ mapa distrito -> [seccion, ..., seccion] """
@@ -330,7 +330,7 @@ def get_shapefile(dne_distrito_id, dne_seccion_id=None):
 
     os.environ['GDAL_DATA'] = GDAL_DATA
     # ojo con el injection aca. Si lo usas en algun lado, fijate que onda.
-    call("%s -f \"ESRI Shapefile\" -a_srs EPSG:4326 %s.shp PG:\"host=localhost user=jjelosua dbname=elecciones2015\" -sql \"%s\"" \
+    call("%s -f \"ESRI Shapefile\" -a_srs EPSG:4326 %s.shp PG:\"host=localhost user=jjelosua dbname=elecciones2013\" -sql \"%s\"" \
          % (OGR2OGR_PATH,
             os.path.join(tmp_dir, "%s-%s.shp" % (dne_distrito_id, dne_seccion_id)),
             q),
