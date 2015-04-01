@@ -32,24 +32,12 @@ def zipdir(path, zip):
         for file in files:
             zip.write(os.path.join(root, file), arcname=file)
 
-class MethodMiddlewareAndReverseProxy(object):
+class MethodMiddleware(object):
     """Don't actually do this. The disadvantages are not worth it."""
     def __init__(self, app):
         self.app = app
 
     def __call__(self, environ, start_response):
-        # From http://flask.pocoo.org/snippets/35/ reverse proxy stuff
-        script_name = environ.get('HTTP_X_SCRIPT_NAME', '')
-        if script_name:
-            environ['SCRIPT_NAME'] = script_name
-            path_info = environ['PATH_INFO']
-            if path_info.startswith(script_name):
-                environ['PATH_INFO'] = path_info[len(script_name):]
-
-        scheme = environ.get('HTTP_X_SCHEME', '')
-        if scheme:
-            environ['wsgi.url_scheme'] = scheme
-        # Method stuff
         if environ['REQUEST_METHOD'].upper() == 'POST':
             environ['wsgi.input'] = stream = \
                 BytesIO(get_input_stream(environ).read())
@@ -69,7 +57,7 @@ def authfunc(env, username, password):
 app = Flask(__name__)
 # Add debug mode
 app.debug = True
-app.wsgi_app = basic.basic('dondevoto', authfunc)(MethodMiddlewareAndReverseProxy(app.wsgi_app))
+app.wsgi_app = basic.basic('dondevoto', authfunc)(MethodMiddleware(app.wsgi_app))
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 db = dataset.connect('postgresql://jjelosua@localhost:5432/elecciones2013')
