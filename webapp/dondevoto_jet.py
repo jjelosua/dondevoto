@@ -9,6 +9,7 @@ import dataset
 import flask
 from flask import Flask, render_template, jsonify, abort, request, send_file
 from werkzeug import Request
+from werkzeug.contrib.fixers import ProxyFix
 from wsgiauth import basic
 import simplejson
 
@@ -57,6 +58,7 @@ app = Flask(__name__)
 # Add debug mode
 app.debug = True
 app.wsgi_app = basic.basic('dondevoto', authfunc)(MethodMiddleware(app.wsgi_app))
+app.wsgi_app = ProxyFix(app.wsgi_app)
 
 db = dataset.connect('postgresql://jjelosua@localhost:5432/elecciones2013')
 
