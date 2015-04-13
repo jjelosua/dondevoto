@@ -117,7 +117,7 @@ tr.matches tr:hover,tr.matches tr.active {
   font-size: 0.5em;
   height: 400px;
   overflow: scroll;
-  width: 250px;
+  width: 300px;
   list-style-type: none;
   margin: 0; padding: 0;
 }
