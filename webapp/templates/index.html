@@ -21,12 +21,12 @@
   </header>
   <div id="container">
     <div id="map-and-select">
-      <label for="distrito">Distrito:</label>
+      <label for="distrito">Provincia:</label>
       <select id="distrito">
         {% for p, ds in provincias_distritos.iteritems() %}
         <optgroup label="{{ p.1|e }}">
           {% for distrito_id, id, d, estab_count, matches_count in ds %}
-          <option {{ 'selected=selected' if p.0 == dne_distrito_id and id == dne_seccion_id else '' }} data-distrito="{{d}}" data-match-count="{{matches_count}}" data-estab-count="{{estab_count}}" value="{{p.0}}-{{id}}">{{d}} ({{"%.2f"|format(matches_count/estab_count * 100)}}%)</option>
+          <option {{ 'selected=selected' if p.0 == dne_distrito_id and id == dne_seccion_id else '' }} data-distrito="{{d}}" data-match-count="{{matches_count}}" data-estab-count="{{estab_count}}" value="{{p.0}}-{{id}}">{{p.1|e}}-{{d}} ({{"%.2f"|format(matches_count/estab_count * 100)}}%)</option>
           {% endfor %}
         </optgroup>
         {% endfor %}
@@ -102,6 +102,8 @@
   </script>
 
   <script type="text/template" id="completion-template">
+    <% var tot_mat = _.reduce(provincias, function(memo, e) {return memo + e.matches_count;}, 0)
+       var tot_est = _.reduce(provincias, function(memo, e) {return memo + e.estab_count;}, 0 ) %>
     <table>
     <% _.each(provincias, function(e) { %>
     <tr>
@@ -110,6 +112,11 @@
       <td><%- e.matches_count %> de <%- e.estab_count %></td>
     </tr>
     <% }); %>
+    <tr class='total'>
+      <th style="text-align: right;">TOTAL</th>
+      <td><%- ((tot_mat / tot_est) * 100).toFixed(2) %>%</td>
+      <td><%- tot_mat %> de <%- tot_est %></td>
+    </tr>
     </table>
   </script>
 

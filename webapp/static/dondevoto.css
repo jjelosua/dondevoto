@@ -115,10 +115,14 @@ tr.matches tr:hover,tr.matches tr.active {
 
 #provincia-ranking {
   font-size: 0.5em;
-  height: 330px;
+  height: 400px;
   overflow: scroll;
-  width: 200px;
+  width: 250px;
   list-style-type: none;
   margin: 0; padding: 0;
+}
+
+#provincia-ranking tr.total {
+  font-size: 1.5em;
 }
 

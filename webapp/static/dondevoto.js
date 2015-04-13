@@ -103,12 +103,14 @@ $(function(){
 
     $('select#distrito').on('change', function() {
         var p_d = $(this).val().split('-');
+        var provincia = $(this).parent('optgroup').attr('label')
+        console.log(provincia)
         history.pushState({foo: null}, "", "/" + p_d[0] + "/" + p_d[1]);
         console.log("/" + p_d[0] + "/" + p_d[1]);
         $.get('/establecimientos/' + p_d.join('/'),
               function(data) {
                   $('table#establecimientos')
-                      .html(table_tmpl({establecimientos: data }));
+                      .html(table_tmpl({establecimientos: data, provincia: p_d[0] }));
               });
 
         map.removeMarkers(markers);
