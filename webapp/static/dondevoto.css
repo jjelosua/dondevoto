@@ -124,5 +124,6 @@ tr.matches tr:hover,tr.matches tr.active {
 
 #provincia-ranking tr.total {
   font-size: 1.5em;
+  font-weight: bold;
 }
 
