@@ -31,8 +31,12 @@ $(function(){
                     var tr = $('tr.establecimiento.active');
                     var p_d = $('select#distrito option:selected').val().split('-');
                     var c = $('td', tr).map(function(d,e) { return e.innerHTML; });
-                    console.log(c);
-                    $('tr.establecimiento.active + tr.matches td table tbody').prepend(new_estab_tmpl({contents: c}));
+                    if( $('tr.establecimiento.active + tr.matches td table tbody').length ) {
+                      $('tr.establecimiento.active + tr.matches td table tbody').prepend(new_estab_tmpl({contents: c}));
+                    }
+                    else {
+                      $('tr.establecimiento.active + tr.matches td table').prepend(new_estab_tmpl({contents: c}));  
+                    }
                     var place_data = {
                         nombre: c[0],
                         ndomiciio: c[1],
