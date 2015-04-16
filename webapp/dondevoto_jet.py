@@ -199,27 +199,36 @@ def places_for_distrito_and_seccion(distrito_id, seccion_id):
     if match: 
       n = int(match.group(1))
     else:
-      n = 0
+      n = -1
     print n
 
-    q = """ SELECT esc.*,
+    q = """ SELECT esc.ogc_fid, esc.nombre, esc.ndomiciio, esc.localidad,
                    st_asgeojson(wkb_geometry_4326) AS geojson,
-                   1 as sim
+                   1 as score
             FROM escuelasutf8 esc
             WHERE esc.dne_distrito_id = %(distrito)d
               AND esc.dne_seccion_id = %(seccion)d
               AND esc.school_number = %(school_number)s
             UNION
-            SELECT esc.*,
+            SELECT esc.ogc_fid, esc.nombre, esc.ndomiciio, esc.localidad,
                    st_asgeojson(wkb_geometry_4326) AS geojson,
-                   similarity(ndomiciio || nombre, '%(query)s') as sim
+                   similarity(ndomiciio, '%(direccion)s') as score
             FROM escuelasutf8 esc
             WHERE esc.dne_distrito_id = %(distrito)d
               AND esc.dne_seccion_id = %(seccion)d
-            ORDER BY sim DESC
+              AND similarity(ndomiciio, '%(direccion)s') IS NOT NULL
+            UNION
+            SELECT esc.ogc_fid, esc.nombre, esc.ndomiciio, esc.localidad,
+                   st_asgeojson(wkb_geometry_4326) AS geojson,
+                   similarity(nombre, '%(nombre)s') as score
+            FROM escuelasutf8 esc
+            WHERE esc.dne_distrito_id = %(distrito)d
+              AND esc.dne_seccion_id = %(seccion)d
+              AND similarity(nombre, '%(nombre)s') IS NOT NULL
+            ORDER BY score DESC
             LIMIT 30
-            """ % {'query': request.args.get('direccion').replace("'", "''") +
-                   request.args.get('nombre').replace("'", "''"),
+            """ % {'direccion': request.args.get('direccion').replace("'", "''"),
+                   'nombre': request.args.get('nombre').replace("'", "''"),
                    'distrito': distrito_id,
                    'seccion': seccion_id,
                    'school_number': n}
