@@ -210,12 +210,15 @@ $(function(){
     $(document).on({
         'click': function(e) {
             var a = $(this);
+            var t = a.data('searchType');
             var tr = a.parents('tr.matches');
             var prev = tr.prev();
             $.get('/places/' + currentDistrito + '/' + currentSeccion,
-                  { direccion: $('td:nth-child(2)', prev).html(), 
-                    // Add nombre to the mixture for the similarity
-                    nombre: $('td:nth-child(1)', prev).html()},
+                  { // Add nombre and localidad to the mixture for the similarity
+                    nombre: $('td:nth-child(1)', prev).html(),
+                    direccion: $('td:nth-child(2)', prev).html(), 
+                    localidad: $('td:nth-child(3)', prev).html(),
+                    search_type: t},
                   function(data) {
                       tr.remove();
                       prev.after(matches_tmpl({
@@ -246,7 +249,7 @@ $(function(){
             e.preventDefault();
             return false;
         }
-    }, 'a#view-all-places')
+    }, 'a.view-all-places')
 
 
     $(document).on(
