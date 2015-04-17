@@ -78,7 +78,7 @@ def provincias_distritos():
                ON e.dne_distrito_id = da.dne_distrito_id
                AND e.dne_seccion_id = da.dne_seccion_id
             LEFT OUTER JOIN weighted_matches wm
-               ON wm.establecimiento_id = e.id AND wm.score = 1
+               ON wm.establecimiento_id = e.id AND wm.score = 1 AND match_source = 1
             GROUP BY da.dne_distrito_id,
                      da.provincia,
                      da.dne_seccion_id,
@@ -123,7 +123,7 @@ def completion():
                ON e.dne_distrito_id = da.dne_distrito_id
                AND e.dne_seccion_id = da.dne_seccion_id
             LEFT OUTER JOIN weighted_matches wm
-               ON wm.establecimiento_id = e.id AND wm.score = 1
+               ON wm.establecimiento_id = e.id AND wm.score = 1 AND match_source = 1
             GROUP BY da.provincia
             ORDER BY provincia """
 
