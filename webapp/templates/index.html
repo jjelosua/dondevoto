@@ -85,7 +85,14 @@
           </tr>
           <% }); %>
         </table>
-        Buscar en google: <input type="text"> o <a href="#" class="view-all-places" data-search-type=''>Escuelas por todo</a>, <a href="#" class="view-all-places" data-search-type='n'>Escuelas por nombre</a>, <a href="#" class="view-all-places" data-search-type='a'>Escuelas por direccion</a>, <a href="#" class="view-all-places" data-search-type='l'>Escuelas por localidad</a>
+        <div id="matches-extra">
+
+        <p>Buscar en google: <input id="geocomplete" type="text"> o <a href="#" class="view-all-places" data-search-type=''>Escuelas por todo</a>, <a href="#" class="view-all-places" data-search-type='n'>Escuelas por nombre</a>, <a href="#" class="view-all-places" data-search-type='a'>Escuelas por direccion</a>, <a href="#" class="view-all-places" data-search-type='l'>Escuelas por localidad</a>
+        </p>
+        <p>
+        Posición manual: (Ex: -34.570350, -58.452181) <input id="latlng" type="text"> <button id="latlngBut" type="button">Geolocalizar!</button> <span id="error" style="visibility:hidden">No está dentro de distrito y sección</span>
+        </p>
+        </div>
       </td>
     </tr>
   </script>

@@ -151,6 +151,50 @@ $(function(){
         console.log(e);
     };
 
+    $(document).on({
+      'click': function(e){
+        e.preventDefault();
+        var loc = $('input#latlng').val();
+        var l_l = loc.split(',');
+        var g = new google.maps.LatLng(l_l[0], l_l[1]);
+        if (polygon.getBounds().contains(g)) {
+          var tr = $('tr.establecimiento.active');
+          var p_d = $('select#distrito option:selected').val().split('-');
+          var c = $('td', tr).map(function(d,e) { return e.innerHTML; });
+          if( $('tr.establecimiento.active + tr.matches td table tbody').length ) {
+            $('tr.establecimiento.active + tr.matches td table tbody').prepend(new_estab_tmpl({contents: c}));
+          }
+          else {
+            $('tr.establecimiento.active + tr.matches td table').prepend(new_estab_tmpl({contents: c}));  
+          }
+          var place_data = {
+            nombre: c[0],
+            ndomiciio: c[1],
+            localidad: c[2],
+            wkb_geometry_4326: 'SRID=4326;POINT(' + l_l[1].trim() + ' ' + l_l[0].trim() + ')',
+            distrito: p_d[0],
+            seccion: p_d[1]
+          };
+          $.post('/create',place_data,
+               function(d) {
+                   place_data['ogc_fid'] = d['ogc_fid'];
+                   var new_tr = $('tr.establecimiento.active + tr.matches td table tr:first-child');
+                   new_tr.data('place', place_data);
+                   $('input[type=checkbox]', new_tr)
+                       .prop('checked', true)
+                       .trigger('change');
+          });
+          $('input#latlng').val("");
+        } 
+        else {
+          $('span#error').css('visibility', 'visible');
+          $('input#latlng').val("");
+          setTimeout(function(){$("span#error").css('visibility', 'hidden');}, 2000);
+        } 
+        return false;
+      }
+    }, 'button#latlngBut')
+
 
     $(document).on({
         'click': function() {
@@ -244,7 +288,7 @@ $(function(){
                           markers.push(marker);
                       });
                       if (markers.length > 0) map.fitZoom();
-                      addGeocomplete($('input[type=text]', $($(prev).next())));
+                      addGeocomplete($('input#geocomplete', $($(prev).next())));
                   });
             e.preventDefault();
             return false;
@@ -310,7 +354,7 @@ $(function(){
                           });
                           if (markers.length > 0) map.fitZoom();
 
-                          addGeocomplete($('input[type=text]', tr.next()));
+                          addGeocomplete($('input#geocomplete', tr.next()));
                       });
             }
         }, 'table#establecimientos tr.establecimiento');
