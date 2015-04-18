@@ -244,8 +244,8 @@ $(function(){
                           markers.push(marker);
                       });
                       if (markers.length > 0) map.fitZoom();
+                      addGeocomplete($('input[type=text]', $($(prev).next())));
                   });
-            addGeocomplete($('input[type=text]', $($(prev).next())));
             e.preventDefault();
             return false;
         }
