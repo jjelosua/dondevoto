@@ -127,3 +127,20 @@ tr.matches tr:hover,tr.matches tr.active {
   font-weight: bold;
 }
 
+button#latlngBut {
+  margin-left: 5px;
+  background: #ddd;
+  border-radius: 4px;
+  outline:none;
+}
+
+span#error {
+  color: red;
+  margin-left: 5px;
+}
+
+div#matches-extra {
+  border-top: 1px #ddd dashed;  
+  padding: 5px;
+}
+

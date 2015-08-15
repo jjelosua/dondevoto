@@ -207,7 +207,6 @@ def matched_escuelas(establecimiento_id):
 @app.route("/places/<distrito_id>/<seccion_id>")
 def places_for_distrito_and_seccion(distrito_id, seccion_id):
     """ Todos los places (escuelas) para este distrito y seccion """
-
     # Add school number search on top
     extract_integer = re.compile(r"^.*?(\d+)").match
     match = extract_integer(request.args.get('nombre'))
@@ -216,37 +215,61 @@ def places_for_distrito_and_seccion(distrito_id, seccion_id):
     else:
         n = -1
 
-    q = """
+    search_type = request.args.get('search_type')
+    nombre = request.args.get('nombre').replace("'", "''")
+    direccion = request.args.get('direccion').replace("'", "''")
+    localidad = request.args.get('localidad').replace("'", "''")
+
+    q_sch_num = """
         SELECT esc.ogc_fid, esc.nombre, esc.direccion, esc.localidad,
                st_asgeojson(wkb_geometry_4326) AS geojson,
                1 as score
         FROM escuelasutf8 esc
         WHERE esc.id_distrito = '%(distrito)s'
-          AND esc.id_seccion = '%(seccion)s'
-          AND esc.num_escuela = '%(num_escuela)s'
-        UNION
-        SELECT esc.ogc_fid, esc.nombre, esc.direccion, esc.localidad,
+        AND esc.id_seccion = '%(seccion)s'
+        AND esc.num_escuela = '%(num_escuela)s'
+    """
+
+    q_sim = """
+        SELECT esc.ogc_fid, esc.nombre, esc.ndomiciio, esc.localidad,
                st_asgeojson(wkb_geometry_4326) AS geojson,
-               similarity(direccion, '%(direccion)s') as score
+               similarity(%(key)s, '%(val)s') as score
         FROM escuelasutf8 esc
         WHERE esc.id_distrito = '%(distrito)s'
-          AND esc.id_seccion = '%(seccion)s'
-          AND similarity(direccion, '%(direccion)s') IS NOT NULL
-        UNION
-        SELECT esc.ogc_fid, esc.nombre, esc.direccion, esc.localidad,
-               st_asgeojson(wkb_geometry_4326) AS geojson,
-               similarity(nombre, '%(nombre)s') as score
-        FROM escuelasutf8 esc
-        WHERE esc.id_distrito = '%(distrito)s'
-          AND esc.id_seccion = '%(seccion)s'
-          AND similarity(nombre, '%(nombre)s') IS NOT NULL
-        ORDER BY score DESC
-        LIMIT 30
-        """ % {'direccion': request.args.get('direccion').replace("'", "''"),
-               'nombre': request.args.get('nombre').replace("'", "''"),
-               'distrito': distrito_id,
-               'seccion': seccion_id,
-               'num_escuela': n}
+        AND esc.id_seccion = '%(seccion)s'
+        AND similarity(%(key)s, '%(val)s') IS NOT NULL"""
+
+    q_end = """ ORDER BY score DESC LIMIT 40"""
+
+    q = q_sch_num % {'distrito': distrito_id, 'seccion': seccion_id, 'var': n}
+    if search_type is not None:
+        if search_type == "":
+            q += ' UNION ' + q_sim % {'distrito': distrito_id,
+                                      'seccion': seccion_id,
+                                      'key': 'nombre',
+                                      'val': nombre}
+
+            q += ' UNION ' + q_sim % {'distrito': distrito_id,
+                                      'seccion': seccion_id,
+                                      'key': 'direccion',
+                                      'val': direccion}
+        elif search_type == "n":
+            q += ' UNION ' + q_sim % {'distrito': distrito_id,
+                                      'seccion': seccion_id,
+                                      'key': 'nombre',
+                                      'val': nombre}
+        elif search_type == "a":
+            q += ' UNION ' + q_sim % {'distrito': distrito_id,
+                                      'seccion': seccion_id,
+                                      'key': 'direccion',
+                                      'val': direccion}
+        elif search_type == "l":
+            q += ' UNION ' + q_sim % {'distrito': distrito_id,
+                                      'seccion': seccion_id,
+                                      'key': 'localidad',
+                                      'val': localidad}
+
+    q = q + q_end
 
     r = [dict(e.items() + [('geojson', json.loads(e['geojson']))])
          for e in db.query(q)]
