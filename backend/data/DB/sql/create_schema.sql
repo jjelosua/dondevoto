@@ -79,8 +79,8 @@ DROP TABLE IF EXISTS escuelasutf8;
 CREATE TABLE escuelasutf8
 (
   ogc_fid serial NOT NULL,
-  id_distrito integer NOT NULL,
-  id_seccion integer NOT NULL,
+  id_distrito character varying(2) NOT NULL,
+  id_seccion character varying(3) NOT NULL,
   localidad character varying(80),
   nombre character varying(80),
   direccion character varying(80),

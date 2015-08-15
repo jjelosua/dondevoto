@@ -58,8 +58,8 @@ def escuelas_in_distrito(id_distrito, id_seccion):
     # Use the calculated district and section
     # over escuelasutf8 and filter out results
     q = """ select * from escuelasutf8 esc
-            where esc.id_distrito = %s
-              and esc.id_seccion = %s
+            where esc.id_distrito = '%s'
+              and esc.id_seccion = '%s'
               and esc.ogc_fid not in (select escuela_id from dedupe_matches)
         """ % (id_distrito, id_seccion)
     results = list(db.query(q))

@@ -227,11 +227,11 @@ def places_for_distrito_and_seccion(distrito_id, seccion_id):
         FROM escuelasutf8 esc
         WHERE esc.id_distrito = '%(distrito)s'
         AND esc.id_seccion = '%(seccion)s'
-        AND esc.num_escuela = '%(num_escuela)s'
+        AND esc.num_escuela = '%(var)s'
     """
 
     q_sim = """
-        SELECT esc.ogc_fid, esc.nombre, esc.ndomiciio, esc.localidad,
+        SELECT esc.ogc_fid, esc.nombre, esc.direccion, esc.localidad,
                st_asgeojson(wkb_geometry_4326) AS geojson,
                similarity(%(key)s, '%(val)s') as score
         FROM escuelasutf8 esc
@@ -328,7 +328,7 @@ def create_place():
     INSERT INTO escuelasutf8 (nombre, direccion, localidad,
                               wkb_geometry_4326,
                               id_distrito, id_seccion)
-    VALUES ('%s', '%s', '%s', '%s', %s, %s)
+    VALUES ('%s', '%s', '%s', '%s', '%s', '%s')
     RETURNING ogc_fid
     """ % (
         request.form['nombre'].replace("'", "''"),
