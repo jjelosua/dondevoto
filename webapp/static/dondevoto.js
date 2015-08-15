@@ -39,7 +39,7 @@ $(function(){
                     }
                     var place_data = {
                         nombre: c[0],
-                        ndomiciio: c[1],
+                        direccion: c[1],
                         localidad: c[2],
                         wkb_geometry_4326: 'SRID=4326;POINT(' + lastRightClickedPoint.lng() + ' ' + lastRightClickedPoint.lat() + ')',
                         distrito: p_d[0],
@@ -108,9 +108,7 @@ $(function(){
     $('select#distrito').on('change', function() {
         var p_d = $(this).val().split('-');
         var provincia = $(this).parent('optgroup').attr('label')
-        console.log(provincia)
         history.pushState({foo: null}, "", "/" + p_d[0] + "/" + p_d[1]);
-        console.log("/" + p_d[0] + "/" + p_d[1]);
         $.get('/establecimientos/' + p_d.join('/'),
               function(data) {
                   $('table#establecimientos')

@@ -31,7 +31,6 @@
         </optgroup>
         {% endfor %}
       </select>
-      <a href="" id="shapefile">Bajar shapefile</a>
       <div id="map">
       </div>
       <ul id="provincia-ranking">
@@ -53,10 +52,10 @@
       <tbody>
         <% _.each(establecimientos, function(e) { %>
         <tr class="establecimiento <% if (e.match_count >= 1) { %> matched<% } else if (e.guess_count >= 1) { %> guessed<%}%>" data-establecimiento-id="<%- e.id %>">
-          <td><%- e.establecimiento %></td>
+          <td><%- e.nombre %></td>
           <td><%- e.direccion %></td>
           <td><%- e.localidad %></td>
-          <td><%- e.circuito %></td>
+          <td><%- e.id_circuito %></td>
         </tr>
         <% }); %>
       </tbody>
@@ -79,7 +78,7 @@
           <tr>
             <td><input type="checkbox" <% if (e.is_match == 1) { %>checked="checked"<% } %>></td>
             <td><%- e.nombre %></td>
-            <td><%- e.ndomiciio %></td>
+            <td><%- e.direccion %></td>
             <td><%- e.localidad %></td>
             <td><%- (e.score * 100).toFixed(3) %></td>
           </tr>
@@ -94,8 +93,8 @@
     <div style="font-size: 0.7em">
       <strong><%- place.nombre %></strong><br>
       <span style="font-size: 0.9em">
-        Dirección: <%- place.ndomiciio %> — Localidad: <%- place.localidad %><br>
-        <%- place.provincia %>
+        Dirección: <%- place.direccion %> — Localidad: <%- place.localidad %><br>
+        <%- place.desc_distrito %>
         <!-- input type="checkbox" class="infowindow-check" -->
       </span>
     </div>
@@ -107,7 +106,7 @@
     <table>
     <% _.each(provincias, function(e) { %>
     <tr>
-      <th style="text-align: right;"><%- e.provincia %></th>
+      <th style="text-align: right;"><%- e.desc_distrito %></th>
       <td><%- ((e.matches_count / e.estab_count) * 100).toFixed(2) %>%</td>
       <td><%- e.matches_count %> de <%- e.estab_count %></td>
     </tr>
