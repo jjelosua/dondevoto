@@ -310,7 +310,6 @@ var GMaps = (function(global) {
       for (i in options.options) {
         if (options.options.hasOwnProperty(i)) {
           var option = options.options[i];
-            console.log(options);
           window.context_menu[self.el.id][options.control][option.name] = {
             title: option.title,
             action: option.action
