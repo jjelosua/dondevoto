@@ -1,7 +1,8 @@
 #!/bin/bash
-INPUT_PATH='../../data/csvlink/output'
+SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
+INPUT_PATH=$SCRIPTPATH'/../../data/csvlink/output'
 INPUT_FILE='dedupe_final_matches.csv'
-OUTPUT_PATH='../../data/DB/csv'
+OUTPUT_PATH=$SCRIPTPATH'/../../data/DB/csv'
 OUTPUT_FILE='weighted_matches.csv'
 COLUMNS='id,ogc_fid'
 

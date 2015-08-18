@@ -1,0 +1,20 @@
+{
+  "field_names_1": ["id_distrito","id_seccion","localidad",
+                    "nombre","direccion","cod_postal","num_escuela"],
+  "field_names_2": ["id_distrito","id_seccion","localidad",
+                    "nombre","direccion","cod_postal","num_escuela"],
+  "field_definition" : [
+    {"field" : "id_distrito", "type" : "Exact"},
+    {"field" : "id_seccion", "type" : "Exact"},
+    {"field" : "nombre", "type" : "String"},
+    {"field" : "direccion", "type" : "String"},
+    {"field" : "cod_postal", "type" : "ShortString", "Has Missing" : true},
+    {"field" : "localidad", "type" : "String"},
+    {"field" : "num_escuela", "type" : "Exact", "Has Missing" : true}],
+  "output_file": "../../data/output/dedupe_matches.csv",
+  "skip_training": false,
+  "inner_join": true,
+  "training_file": "training.json",
+  "sample_size": 5000000,
+  "recall_weight": 5
+}

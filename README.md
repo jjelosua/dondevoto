@@ -85,3 +85,27 @@ Contar con un mapa completo de locales de votación puede servir, en el futuro, 
 Y por otro lado, por que sí.
 
 Entonces, si tenés ganas de ver qué sale, contactame: [@manuelaristaran](http://twitter.com/manuelaristaran) en Twitter o a mi mail, que figura en [jazzido.com](http://jazzido.com)
+
+### dondevoto 2.0 (Juan Elosua [@jjelosua](https://twitter.com/jjelosua))
+
+Partiendo del código de Manuel hemos introducido un par de procesos para utilizar machine learning [csvlink](https://github.com/datamade/csvdedupe) para reconciliar los datos de escuelas de mapaeducativo con los datos de establecimientos de voto.
+
+Una feature que se ha mostrado muy eficaz a la hora de mejorar los resultados es extraer el número de escuela de ambos datasets y utilizarlo a la hora de hacer el matching.
+
+#### Backend
+
+En el backend tenemos los procesos de generación de la DB postgis necesaria para la herramienta de crowdsourcing de dondevoto. 
+
+Hemos creado un par de tareas en fabric para automatizar la generación.
+
+Más información: [aquí](backend/README.md)
+
+#### Frontend
+
+Hemos introducido ciertas modificaciones para acomodar los resultados del machine learning y permitir mayor número de búsquedas a la hora de intentar conectar escuelas con establecimientos.
+
+También hemos añadido la posibilidad de incluir las coordenadas de forma manual respetando un formato predeterminado por si haciendo búsquedas en google conseguimos su geolocalización.
+
+Más información: [aquí](webapp/README.md)
+
+

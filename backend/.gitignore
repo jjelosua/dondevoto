@@ -1,2 +1,4 @@
-data/csvlink/
+data/csvlink/input/polling*
+data/csvlink/output/
+data/csvlink/training/training*
 data/DB/csv/
