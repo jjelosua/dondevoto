@@ -2,3 +2,4 @@ data/csvlink/input/polling*
 data/csvlink/output/
 data/csvlink/config/training*
 data/DB/csv/
+data/geo/
