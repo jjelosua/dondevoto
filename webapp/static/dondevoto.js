@@ -167,7 +167,7 @@ $(function(){
           }
           var place_data = {
             nombre: c[0],
-            ndomiciio: c[1],
+            direccion: c[1],
             localidad: c[2],
             wkb_geometry_4326: 'SRID=4326;POINT(' + l_l[1].trim() + ' ' + l_l[0].trim() + ')',
             distrito: p_d[0],
