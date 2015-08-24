@@ -1,8 +1,8 @@
 --DATABASE
 
--- Database: geo_arg_paso_2015
-DROP DATABASE IF EXISTS geo_arg_paso_2015;
-CREATE DATABASE geo_arg_paso_2015
+-- Database: dondevoto_arg_paso_2015
+DROP DATABASE IF EXISTS dondevoto_arg_paso_2015;
+CREATE DATABASE dondevoto_arg_paso_2015
   WITH OWNER = jjelosua
        ENCODING = 'UTF8'
        TABLESPACE = pg_default

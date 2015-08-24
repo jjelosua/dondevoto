@@ -1,7 +1,7 @@
 #!/bin/bash
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 INPUT_PATH=$SCRIPTPATH'/../../data/csvlink/output'
-INPUT_FILE='dedupe_final_matches.csv'
+INPUT_FILE='dedupe_matches_complete_r1.csv'
 OUTPUT_PATH=$SCRIPTPATH'/../../data/DB/csv'
 OUTPUT_FILE='dedupe_matches.csv'
 COLUMNS='id,ogc_fid,wkb_geometry_4326'

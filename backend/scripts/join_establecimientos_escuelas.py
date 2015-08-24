@@ -92,14 +92,6 @@ def match_persister():
             break
 
 
-# def canon_func(est):
-#     '''return canonized version of polling stations
-#        for the get_close_matches function'''
-#     d = {str(k): v for k, v in est.iteritems()}
-#     canonized = canon("%(nombre)s%(direccion)s" % d)
-#     return canonized
-
-
 def do_match():
     total_establecimientos = len(establecimientos)
     log('TOTAL: %s' % total_establecimientos)

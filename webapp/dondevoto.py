@@ -183,7 +183,7 @@ def matched_escuelas(establecimiento_id):
             wm.score,
             wm.establecimiento_id,
             esc.*,
-            st_asgeojson(wkb_geometry_4326) AS geojson,
+            st_asgeojson(esc.wkb_geometry_4326) AS geojson,
             (CASE WHEN wm.match_source >= 1 THEN 1
              WHEN wm.score > %f AND wm.match_source = 0 THEN 1
              ELSE 0
@@ -222,7 +222,7 @@ def places_for_distrito_and_seccion(distrito_id, seccion_id):
 
     q_sch_num = """
         SELECT esc.ogc_fid, esc.nombre, esc.direccion, esc.localidad,
-               st_asgeojson(wkb_geometry_4326) AS geojson,
+               st_asgeojson(esc.wkb_geometry_4326) AS geojson,
                1 as score
         FROM escuelasutf8 esc
         WHERE esc.id_distrito = '%(distrito)s'
@@ -232,7 +232,7 @@ def places_for_distrito_and_seccion(distrito_id, seccion_id):
 
     q_sim = """
         SELECT esc.ogc_fid, esc.nombre, esc.direccion, esc.localidad,
-               st_asgeojson(wkb_geometry_4326) AS geojson,
+               st_asgeojson(esc.wkb_geometry_4326) AS geojson,
                similarity(%(key)s, '%(val)s') as score
         FROM escuelasutf8 esc
         WHERE esc.id_distrito = '%(distrito)s'

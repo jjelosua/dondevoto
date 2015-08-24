@@ -57,14 +57,15 @@ CREATE TABLE establecimientos
   id_dpto character varying(5) NOT NULL,
   desc_seccion text,
   id_circuito character varying(5) NOT NULL,
-  localidad text,
   nombre text,
   direccion text,
-  num_escuela character varying(10),
+  localidad text,
   cod_postal character varying(10),
+  num_escuela character varying(10),
   cod_SIE text,
   latitud character varying(50),
   longitud character varying(50),
+  wkb_geometry_4326 geometry(Point,4326),
   CONSTRAINT establecimientos_pk PRIMARY KEY (id)
 )
 WITH (
@@ -72,6 +73,13 @@ WITH (
 );
 ALTER TABLE establecimientos
   OWNER TO jjelosua;
+
+-- Index: escuelasutf8_geom_idx
+DROP INDEX IF EXISTS establecimientos_geom_idx;
+CREATE INDEX establecimientos_geom_idx
+  ON establecimientos
+  USING gist
+  (wkb_geometry_4326);
 
 
 -- Table: escuelasutf8
@@ -81,12 +89,12 @@ CREATE TABLE escuelasutf8
   ogc_fid serial NOT NULL,
   id_distrito character varying(2) NOT NULL,
   id_seccion character varying(3) NOT NULL,
-  localidad character varying(80),
   nombre character varying(80),
   direccion character varying(80),
-  cueanexo character varying(80),
+  localidad character varying(80),
   cod_postal character varying(80),
   num_escuela character varying(10),
+  cueanexo character varying(80),
   wkb_geometry_4326 geometry(Point,4326),
   CONSTRAINT escuelasutf8_pk PRIMARY KEY (ogc_fid)
 )

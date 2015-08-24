@@ -36,9 +36,28 @@ def ml_csvlink():
         local('scripts/csvlink/run_csvlink.sh')
 
 
-@task(alias='regenerate')
+@task(alias='clean_dedupe')
 @runs_once
-def regenerate_data():
+def clean_csvlink():
+    with lcd(cwd):
+        local('scripts/csvlink/clean_csvlink_polling.sh')
+        local('scripts/csvlink/clean_csvlink_schools.sh')
+        local('scripts/csvlink/clean_csvlink_dedupe.sh')
+        local('scripts/csvlink/clean_csvlink_weighted.sh')
+
+
+@task(alias='reset_db')
+@runs_once
+def reset_database():
+    with lcd(cwd):
+        local('scripts/DB/create_db.sh')
+        local('scripts/DB/create_schema.sh')
+        local('python scripts/join_establecimientos_escuelas.py')
+
+
+@task(alias='reload_data')
+@runs_once
+def reload_database_data():
     with lcd(cwd):
         local('scripts/DB/create_db.sh')
         local('scripts/DB/create_schema.sh')
@@ -46,10 +65,14 @@ def regenerate_data():
         local('scripts/DB/load_polling_stations.sh')
         local('scripts/DB/load_schools.sh')
         local('scripts/DB/update_school_sequence.sh')
-        local('scripts/csvlink/clean_csvlink_dedupe.sh')
         local('scripts/DB/load_dedupe_matches.sh')
-        local('scripts/csvlink/clean_csvlink_weighted.sh')
         local('scripts/DB/load_weighted_matches.sh')
+
+
+@task(alias='add_sim_results')
+@runs_once
+def add_similarity_results():
+    with lcd(cwd):
         local('python scripts/join_establecimientos_escuelas.py')
 
 
