@@ -49,7 +49,7 @@
       </thead>
       <tbody>
         <% _.each(establecimientos, function(e) { %>
-        <tr class="establecimiento <% if (e.match_count >= 1) { %> matched<% } else if (e.guess_count >= 1) { %> guessed<%}%>" data-establecimiento-id="<%- e.id %>">
+        <tr class="establecimiento <% if (e.match_count >= 1) { %> matched<% } else if (e.guess_count >= 1 && e.closeby_count == 0) { %> wrong<% } else if (e.guess_count >= 1) { %> guessed<%}%>" data-establecimiento-id="<%- e.id %>" data-lat="<%- e.latitud %>" data-lng="<%- e.longitud %>">
           <td><%- e.nombre %></td>
           <td><%- e.direccion %></td>
           <td><%- e.localidad %></td>

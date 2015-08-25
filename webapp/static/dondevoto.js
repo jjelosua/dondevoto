@@ -146,7 +146,7 @@ $(function(){
     });
 
     var showMarker = function(e) {
-        console.log(e);
+        //console.log(e);
     };
 
     $(document).on({
@@ -243,7 +243,7 @@ $(function(){
                 // chkbox activado
                 if (!$('input[type=checkbox]').is(':checked'))
                     establecimiento_tr.removeClass('matched');
-
+                var url = '/matches/' + establecimiento;
                 $.post(url, { _method: 'delete'});
             }
         },
@@ -302,7 +302,12 @@ $(function(){
                 $('tr.matches').remove();
                 var tr = $(this);
                 tr.addClass('active');
-                var eid = $(this).data('establecimiento-id');
+                var eid = tr.data('establecimiento-id');
+                var enombre = $('td:nth-child(1)', tr).html();
+                var edireccion = $('td:nth-child(2)', tr).html(); 
+                var elocalidad = $('td:nth-child(3)', tr).html();
+                var elat = tr.data('lat');
+                var elng = tr.data('lng');
                 $.get('/matches/' + eid,
                       function(data) {
                           // todo este quilombo es para sacar los duplicados que vienen del join
@@ -337,7 +342,23 @@ $(function(){
                               tr.addClass('matched');
 
                           map.removeMarkers(markers);
-                          markers = []
+
+                          // Add current geoposition
+                          var m = {
+                            nombre: enombre,
+                            direccion: edireccion,
+                            desc_distrito: elocalidad
+                          };
+                          var emarker = map.addMarker({
+                                  lat: elat,
+                                  lng: elng,
+                                  details: m,
+                                  infoWindow: {
+                                      content: infowindow_tmpl({place: m})
+                                  },
+                                  icon: '/static/polling.png'
+                              });
+                          markers = [emarker]
                           data.forEach(function(m) {
                               var marker = map.addMarker({
                                   lat: m.geojson.coordinates[1],

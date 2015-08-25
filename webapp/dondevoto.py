@@ -14,6 +14,8 @@ import json
 
 # Umbral para considerar válidas a los matches calculados por el algoritmo
 MATCH_THRESHOLD = 0.95
+# Umbral para detectar inconsistencias en la geolocalizacion
+DISTANCE_THRESHOLD = 200
 DELETE_MATCHES_QUERY = """ DELETE
                            FROM weighted_matches
                            WHERE establecimiento_id = %d
@@ -158,17 +160,24 @@ def seccion_info(distrito_id, seccion_id):
 @app.route("/establecimientos/<distrito_id>/<seccion_id>")
 def establecimientos_by_distrito_and_seccion(distrito_id, seccion_id):
     q = """
-        SELECT e.id, e.nombre, e.direccion, e.localidad, e.id_circuito,
+        SELECT e.id, e.nombre, e.direccion, e.localidad,
+        e.id_circuito, e.latitud, e.longitud,
         count(CASE WHEN wm.score >= 1 then 1 end) AS match_count,
         count(CASE WHEN wm.score < 1
-              AND wm.score >= 0.95 Then 1 end) AS guess_count
-        FROM establecimientos e
-        LEFT OUTER JOIN weighted_matches wm
-            ON wm.establecimiento_id = e.id AND wm.score >= %f
-        WHERE id_distrito = '%s'
-            AND id_seccion = '%s'
-        GROUP BY e.id, e.nombre, e.direccion, e.localidad, e.id_circuito
-        ORDER BY e.id_circuito """ % (MATCH_THRESHOLD, distrito_id, seccion_id)
+              AND wm.score >= 0.95 Then 1 end) AS guess_count,
+        count(CASE WHEN st_distance(esc.wkb_geometry_4326::geography,
+                                    e.wkb_geometry_4326::geography) <= %d
+                   Then 1 end) AS closeby_count
+        FROM establecimientos e, weighted_matches wm, escuelasutf8 esc
+        WHERE wm.establecimiento_id = e.id
+        AND wm.escuela_id = esc.ogc_fid
+        AND wm.score >= %f
+        AND e.id_distrito = '%s'
+        AND e.id_seccion = '%s'
+        GROUP BY e.id, e.nombre, e.direccion, e.localidad, e.id_circuito,
+                 e.latitud, e.longitud
+        ORDER BY e.id_circuito """ % (DISTANCE_THRESHOLD, MATCH_THRESHOLD,
+                                      distrito_id, seccion_id)
 
     return flask.Response(flask.json.dumps(list(db.query(q))),
                           mimetype='application/json')
