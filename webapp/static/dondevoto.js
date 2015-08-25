@@ -234,15 +234,13 @@ $(function(){
             var url = '/matches/' + establecimiento + '/' + currentPlace.ogc_fid;
 
             if (chk.is(':checked')) {
-                establecimiento_tr.removeClass('guessed');
+                //establecimiento_tr.removeClass('guessed');
+                //establecimiento_tr.removeClass('wrong');
                 establecimiento_tr.addClass('matched');
                 $.post(url);
             }
             else { //delete
-                // indicar que no hay match sólo si no hay ningun
-                // chkbox activado
-                if (!$('input[type=checkbox]').is(':checked'))
-                    establecimiento_tr.removeClass('matched');
+                establecimiento_tr.removeClass('matched');
                 var url = '/matches/' + establecimiento;
                 $.post(url, { _method: 'delete'});
             }

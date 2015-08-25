@@ -74,10 +74,6 @@ table#establecimientos tr.establecimiento:hover {
     background-color: #eee;
   }
 
-  table#establecimientos tbody tr.matched {
-    background-color: lightgreen;
-  }
-
   /*jjelosua*/
   table#establecimientos tbody tr.guessed {
     background-color: yellow;
@@ -86,6 +82,10 @@ table#establecimientos tr.establecimiento:hover {
   /*jjelosua*/
   table#establecimientos tbody tr.wrong {
     background-color: red;
+  }
+
+  table#establecimientos tbody tr.matched {
+    background-color: lightgreen;
   }
 
 
