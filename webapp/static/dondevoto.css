@@ -68,36 +68,38 @@ tr.matches table, tr.matches table tr, tr.matches table td {
 
 table#establecimientos tr.establecimiento:hover {
   cursor: pointer;
+  border: 3px solid #555;
 }
 
-  table#establecimientos tbody tr.active, table#establecimientos tr.establecimiento:hover {
-    background-color: #eee;
-  }
+table#establecimientos tbody tr.active {
+  background-color: #eee;
+  border: 3px solid #555;
+}
 
-  /*jjelosua*/
-  table#establecimientos tbody tr.guessed {
-    background-color: yellow;
-  }
+/*jjelosua*/
+table#establecimientos tbody tr.guessed {
+  background-color: yellow;
+}
 
-  /*jjelosua*/
-  table#establecimientos tbody tr.wrong {
-    background-color: red;
-  }
+/*jjelosua*/
+table#establecimientos tbody tr.wrong {
+  background-color: red;
+}
 
-  table#establecimientos tbody tr.matched {
-    background-color: lightgreen;
-  }
+table#establecimientos tbody tr.matched {
+  background-color: lightgreen;
+}
 
 
-  table#establecimientos thead {
-    text-align: left;
-    font-weight: bold;
-    background-color: #ddd;
-  }
+table#establecimientos thead {
+  text-align: left;
+  font-weight: bold;
+  background-color: #ddd;
+}
 
-  table#establecimientos tr {
-    height: 20px;
-  }
+table#establecimientos tr {
+  height: 20px;
+}
 
 
 tr.matches {
