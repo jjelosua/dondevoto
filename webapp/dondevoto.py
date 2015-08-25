@@ -162,9 +162,10 @@ def establecimientos_by_distrito_and_seccion(distrito_id, seccion_id):
     q = """
         SELECT e.id, e.nombre, e.direccion, e.localidad,
         e.id_circuito, e.latitud, e.longitud,
-        count(CASE WHEN wm.score >= 1 then 1 end) AS match_count,
-        count(CASE WHEN wm.score < 1
-              AND wm.score >= 0.95 Then 1 end) AS guess_count,
+        count(CASE WHEN wm.score = 1
+              and wm.match_source = 1 then 1 end) AS match_count,
+        count(CASE WHEN wm.score >= 0.95
+              AND wm.match_source != 1 Then 1 end) AS guess_count,
         count(CASE WHEN st_distance(esc.wkb_geometry_4326::geography,
                                     e.wkb_geometry_4326::geography) <= %d
                    Then 1 end) AS closeby_count
@@ -194,8 +195,7 @@ def matched_escuelas(establecimiento_id):
             wm.establecimiento_id,
             esc.*,
             st_asgeojson(esc.wkb_geometry_4326) AS geojson,
-            (CASE WHEN wm.match_source >= 1 THEN 1
-             WHEN wm.score > %f AND wm.match_source = 0 THEN 1
+            (CASE WHEN wm.score = 1 AND wm.match_source = 1 THEN 1
              ELSE 0
             END) AS is_match
        FROM weighted_matches wm
@@ -205,7 +205,7 @@ def matched_escuelas(establecimiento_id):
             ON esc.ogc_fid = wm.escuela_id
        WHERE wm.establecimiento_id = %d
        ORDER BY wm.score DESC
-       """ % (MATCH_THRESHOLD, establecimiento_id)
+       """ % (establecimiento_id)
 
     r = [dict(e.items() + [('geojson', json.loads(e['geojson']))])
          for e in db.query(q)]
