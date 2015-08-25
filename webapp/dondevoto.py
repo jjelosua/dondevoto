@@ -15,7 +15,7 @@ import json
 # Umbral para considerar válidas a los matches calculados por el algoritmo
 MATCH_THRESHOLD = 0.95
 # Umbral para detectar inconsistencias en la geolocalizacion
-DISTANCE_THRESHOLD = 100
+DISTANCE_THRESHOLD = 200
 DELETE_MATCHES_QUERY = """ DELETE
                            FROM weighted_matches
                            WHERE establecimiento_id = %d

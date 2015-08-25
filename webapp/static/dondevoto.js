@@ -253,6 +253,12 @@ $(function(){
             var t = a.data('searchType');
             var tr = a.parents('tr.matches');
             var prev = tr.prev();
+            var eid = prev.data('establecimiento-id');
+            var enombre = $('td:nth-child(1)', prev).html();
+            var edireccion = $('td:nth-child(2)', prev).html(); 
+            var elocalidad = $('td:nth-child(3)', prev).html();
+            var elat = prev.data('lat');
+            var elng = prev.data('lng');
             $.get('/places/' + currentDistrito + '/' + currentSeccion,
                   { // Add nombre and localidad to the mixture for the similarity
                     nombre: $('td:nth-child(1)', prev).html(),
@@ -271,6 +277,24 @@ $(function(){
                       });
                       map.removeMarkers(markers);
                       markers = []
+                      if (elat != "") {
+                        // Add current geoposition
+                        var m = {
+                          nombre: enombre,
+                          direccion: edireccion,
+                          desc_distrito: elocalidad
+                        };
+                        var emarker = map.addMarker({
+                              lat: elat,
+                              lng: elng,
+                              details: m,
+                              infoWindow: {
+                                  content: infowindow_tmpl({place: m})
+                              },
+                              icon: '/static/polling.png'
+                        });
+                        markers.push(emarker);
+                      }
                       data.forEach(function(m) {
                           var marker = map.addMarker({
                               lat: m.geojson.coordinates[1],
@@ -340,15 +364,14 @@ $(function(){
                               tr.addClass('matched');
 
                           map.removeMarkers(markers);
-
-                          // Add current geoposition
-                          var m = {
-                            nombre: enombre,
-                            direccion: edireccion,
-                            desc_distrito: elocalidad
-                          };
                           markers = [];
                           if (elat != "") {
+                            // Add current geoposition
+                            var m = {
+                              nombre: enombre,
+                              direccion: edireccion,
+                              desc_distrito: elocalidad
+                            };
                             var emarker = map.addMarker({
                                   lat: elat,
                                   lng: elng,
