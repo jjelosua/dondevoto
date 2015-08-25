@@ -349,7 +349,9 @@ $(function(){
                             direccion: edireccion,
                             desc_distrito: elocalidad
                           };
-                          var emarker = map.addMarker({
+                          markers = [];
+                          if (elat != "") {
+                            var emarker = map.addMarker({
                                   lat: elat,
                                   lng: elng,
                                   details: m,
@@ -357,8 +359,9 @@ $(function(){
                                       content: infowindow_tmpl({place: m})
                                   },
                                   icon: '/static/polling.png'
-                              });
-                          markers = [emarker]
+                            });
+                            markers.push(emarker);
+                          }
                           data.forEach(function(m) {
                               var marker = map.addMarker({
                                   lat: m.geojson.coordinates[1],

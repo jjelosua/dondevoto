@@ -15,7 +15,7 @@ import json
 # Umbral para considerar válidas a los matches calculados por el algoritmo
 MATCH_THRESHOLD = 0.95
 # Umbral para detectar inconsistencias en la geolocalizacion
-DISTANCE_THRESHOLD = 200
+DISTANCE_THRESHOLD = 100
 DELETE_MATCHES_QUERY = """ DELETE
                            FROM weighted_matches
                            WHERE establecimiento_id = %d
@@ -168,11 +168,12 @@ def establecimientos_by_distrito_and_seccion(distrito_id, seccion_id):
         count(CASE WHEN st_distance(esc.wkb_geometry_4326::geography,
                                     e.wkb_geometry_4326::geography) <= %d
                    Then 1 end) AS closeby_count
-        FROM establecimientos e, weighted_matches wm, escuelasutf8 esc
-        WHERE wm.establecimiento_id = e.id
-        AND wm.escuela_id = esc.ogc_fid
-        AND wm.score >= %f
-        AND e.id_distrito = '%s'
+        FROM establecimientos e
+        LEFT OUTER JOIN weighted_matches wm
+          ON (wm.establecimiento_id = e.id AND wm.score >= %f)
+        LEFT OUTER JOIN escuelasutf8 esc
+          ON (wm.escuela_id = esc.ogc_fid)
+        WHERE e.id_distrito = '%s'
         AND e.id_seccion = '%s'
         GROUP BY e.id, e.nombre, e.direccion, e.localidad, e.id_circuito,
                  e.latitud, e.longitud

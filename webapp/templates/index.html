@@ -24,7 +24,7 @@
         {% for p, ds in provincias_distritos.iteritems() %}
         <optgroup label="{{ p.1|e }}">
           {% for distrito_id, id, d, estab_count, matches_count in ds %}
-          <option {{ 'selected=selected' if p.0 == dne_distrito_id and id == dne_seccion_id else '' }} data-distrito="{{d}}" data-match-count="{{matches_count}}" data-estab-count="{{estab_count}}" value="{{p.0}}-{{id}}">{{p.1|e}}-{{d}} ({{estab_count}} estab.)</option>
+          <option {{ 'selected=selected' if p.0 == dne_distrito_id and id == dne_seccion_id else '' }} data-distrito="{{d}}" data-match-count="{{matches_count}}" data-estab-count="{{estab_count}}" value="{{p.0}}-{{id}}">{{p.1|e}}-{{d}} ({{"%.2f"|format(matches_count/estab_count * 100)}}%)</option>
           {% endfor %}
         </optgroup>
         {% endfor %}

@@ -52,15 +52,12 @@ def reset_database():
     with lcd(cwd):
         local('scripts/DB/create_db.sh')
         local('scripts/DB/create_schema.sh')
-        local('python scripts/join_establecimientos_escuelas.py')
 
 
 @task(alias='reload_data')
 @runs_once
 def reload_database_data():
     with lcd(cwd):
-        local('scripts/DB/create_db.sh')
-        local('scripts/DB/create_schema.sh')
         local('scripts/DB/load_adm_boundaries.sh')
         local('scripts/DB/load_polling_stations.sh')
         local('scripts/DB/load_schools.sh')

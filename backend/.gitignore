@@ -3,3 +3,4 @@ data/csvlink/output/*
 data/csvlink/config/training*
 data/DB/csv/
 data/geo/
+doc/
