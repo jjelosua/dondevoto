@@ -296,16 +296,21 @@ $(function(){
                         markers.push(emarker);
                       }
                       data.forEach(function(m) {
-                          var marker = map.addMarker({
-                              lat: m.geojson.coordinates[1],
-                              lng: m.geojson.coordinates[0],
-                              details: m,
-                              infoWindow: {
-                                  content: infowindow_tmpl({place: m})
-                              },
-                              click: showMarker,
-                          });
-                          markers.push(marker);
+                        if (m.score > 0.2) {
+                            var marker = map.addMarker({
+                                lat: m.geojson.coordinates[1],
+                                lng: m.geojson.coordinates[0],
+                                details: m,
+                                infoWindow: {
+                                    content: infowindow_tmpl({place: m})
+                                },
+                                click: showMarker,
+                            });
+                            markers.push(marker);
+                        }
+                        else {
+                          //console.log(m.score)
+                        }
                       });
                       if (markers.length > 0) map.fitZoom();
                       addGeocomplete($('input#geocomplete', $($(prev).next())));
