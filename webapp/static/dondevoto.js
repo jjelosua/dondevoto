@@ -285,6 +285,7 @@ $(function(){
                           desc_distrito: elocalidad
                         };
                         var emarker = map.addMarker({
+                              clickable: false,
                               lat: elat,
                               lng: elng,
                               details: m,
@@ -378,6 +379,7 @@ $(function(){
                               desc_distrito: elocalidad
                             };
                             var emarker = map.addMarker({
+                                  clickable: false,
                                   lat: elat,
                                   lng: elng,
                                   details: m,
